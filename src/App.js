@@ -8,6 +8,7 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
 
+
 class App extends React.Component {
   state = {
     authenticated: false,
