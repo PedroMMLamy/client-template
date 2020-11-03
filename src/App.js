@@ -1,85 +1,68 @@
-import React from "react";
-import { BrowserRouter, Link, Switch } from "react-router-dom";
-import "./App.css";
-import AnonRoute from "./components/auth/AnonRoute";
-import PrivateRoute from "./components/auth/PrivateRoute";
-import { validateSession } from "./services/userService";
-import Home from "./views/Home";
-import Login from "./views/Login";
-import Signup from "./views/Signup";
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+//import Home from "./components/home.component";
+import CreateTodo from "./components/create-todo.component";
+import EditTodo from "./components/edit-todo.component";
+import TodosList from "./components/todos-list.component";
 
-class App extends React.Component {
-  state = {
-    authenticated: false,
-    user: {},
-  };
-  componentDidMount = () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      validateSession(accessToken)
-        .then((response) => {
-          console.log(response, "RESPONSE");
-          this.authenticate(response.session.userId);
-        })
-        .catch((err) => console.log(err));
-    }
-  };
-
-  authenticate = (user) => {
-    this.setState({
-      authenticated: true,
-      user,
-    });
-  };
-
-  handleLogout = () => {
-    localStorage.clear();
-    this.setState({
-      authenticated: false,
-      user: {},
-    });
-  };
+class App extends Component {
   render() {
-    const { authenticated } = this.state;
     return (
-      <div className="App">
-        <BrowserRouter>
-          <nav>
-            {authenticated && <Link to="/"> Home </Link>}
-            {!authenticated && <Link to="/login"> Login </Link>}
-            {!authenticated && <Link to="/signup"> Signup </Link>}
-            {authenticated && (
-              <Link to={"/"} onClick={this.handleLogout}>
-                Logout
-              </Link>
-            )}
+     /*
+     <BrowserRouter>
+        <nav>
+          <Link to="/"> Home </Link>
+          <Link to="/login"> Login </Link>
+          <Link to="/signup"> Signup </Link>
+        </nav>
+        {/* 
+        <Switch>
+          <Route 
+          exact 
+          path="/" 
+          render={(props) => {
+          <Home {...props} completedTodos={this.state.completedTodos} 
+          setUser={this.setUser} todos={this.state.todos} 
+          toggleTodoDone={this.toggleTodoDone} removeTodo={this.removeTodo}}}/>
+          
+        </Switch>
+        /}
+        <nav>
+          <Link to="/"> Home </Link>
+          <Link to="/login"> Login </Link>
+          <Link to="/signup"> Signup </Link>
+        </nav>
+        <Switch>
+          <PrivateRoute 
+          exact
+          <Route> path="/todoService" component ={getAllTodos} </Route>             
+        </Switch>
+      </BrowserRouter>
+     */
+     <Router>
+        <div className="container">
+          <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            
+            <Link to="/" className="navbar-brand">TodoIst APP</Link>
+            <div className="collpase navbar-collapse">
+              <ul className="navbar-nav mr-auto">
+                <li className="navbar-item">
+                  <Link to="/" className="nav-link">Todos</Link>
+                </li>
+                <li className="navbar-item">
+                  <Link to="/create" className="nav-link">Create Todo</Link>
+                </li>
+              </ul>
+            </div>
           </nav>
-          <Switch>
-            <PrivateRoute
-              exact
-              path="/"
-              user={this.state.user}
-              authenticated={authenticated}
-              component={Home}
-            />
-            <AnonRoute
-              exact
-              path="/login"
-              authenticated={authenticated}
-              authenticate={this.authenticate}
-              component={Login}
-            />
-            <AnonRoute
-              exact
-              path="/signup"
-              authenticated={authenticated}
-              authenticate={this.authenticate}
-              component={Signup}
-            />
-          </Switch>
-        </BrowserRouter>
-      </div>
+          <br/>
+          <Route path="/" exact component={TodosList} />
+          <Route path="/edit/:id" component={EditTodo} />
+          <Route path="/create" component={CreateTodo} />
+        </div>
+      </Router>
     );
   }
 }
